@@ -55,7 +55,7 @@ class Card extends StatelessWidget {
   }
 }
 
-class DraggableCard extends StatelessWidget {
+class DraggableCard extends StatefulWidget {
   const DraggableCard({
     Key key,
     @required this.deckWidth,
@@ -64,6 +64,7 @@ class DraggableCard extends StatelessWidget {
     @required this.transition,
     @required this.child,
   })  : _angle = maxAngle * transition,
+        _maxTransition = maxAngle + 1.0,
         super(key: key);
 
   final double deckWidth;
@@ -72,18 +73,38 @@ class DraggableCard extends StatelessWidget {
   final Widget child;
 
   final double _angle;
+  final double _maxTransition;
+
+  @override
+  _DraggableCardState createState() => _DraggableCardState();
+}
+
+class _DraggableCardState extends State<DraggableCard> {
+  ColorTween wrongTween;
+  ColorTween rightTween;
+
+  @override
+  void initState() {
+    wrongTween = ColorTween(begin: Colors.white, end: Colors.blue);
+    rightTween = ColorTween(begin: Colors.white, end: Colors.red);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final transitionRatio = (widget.transition / widget._maxTransition).abs();
+    final _color = (widget.transition.isNegative ? rightTween : wrongTween).lerp(transitionRatio);
+
     return Visibility(
-      visible: child != null,
+      visible: widget.child != null,
       child: Transform(
-        alignment: alignment,
+        alignment: widget.alignment,
         transform: Matrix4.identity()
-          ..translate(transition * deckWidth, .0)
-          ..rotateZ(alignment == Alignment.topCenter ? _angle : -_angle),
+          ..translate(widget.transition * widget.deckWidth, .0)
+          ..rotateZ(widget.alignment == Alignment.topCenter ? widget._angle : -widget._angle),
         child: material.Card(
-          child: child,
+          color: _color,
+          child: widget.child,
         ),
       ),
     );
