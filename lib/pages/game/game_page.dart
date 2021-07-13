@@ -31,6 +31,9 @@ class _GamePageState extends State<GamePage> {
             child: Deck(
               onSwipe: onSwipe,
               cardsCount: data.length,
+              cardScaleFactor: .89,
+              swipeTransitionThreshold: 1.45,
+              edgeWidthFactor: 1.0,
               visibleCardsCount: 3,
               padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
               cardBuilder: (BuildContext context, int index) => Center(
